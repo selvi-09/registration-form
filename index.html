@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Form CRUD</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 500px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #successMsg {
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        /* FOCUS EFFECT */
+        input:focus, textarea:focus, select:focus {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #43a047;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #333;
+            color: white;
+            padding: 8px;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .edit {
+            background: orange;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete {
+            background: red;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Registration Form</h2>
+
+    <p id="successMsg"></p>
+
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Enter name">
+
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter email">
+
+    <label>Mobile</label>
+    <input type="text" id="mobile" placeholder="Enter mobile number" maxlength="10">
+
+    <label>Gender</label>
+    <select id="gender">
+        <option value="">Select gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+    </select>
+
+    <label>Date of Birth</label>
+    <input type="date" id="dob">
+
+    <label>Address</label>
+    <textarea id="address" placeholder="Enter address"></textarea>
+
+    <button id="btn" onclick="addUser()">Register</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+    </table>
+</div>
+
+<script>
+    let selectedRow = null;
+
+    window.onload = () => {
+        document.getElementById("name").focus();
+    };
+
+    function addUser() {
+        let name = nameField.value.trim();
+        let email = emailField.value.trim();
+        let mobile = mobileField.value.trim();
+        if (mobile.length !== 10) {
+    alert("Mobile number must be exactly 10 digits");
+    mobileField.focus();
+    return;
+}
+        let gender = genderField.value;
+        let dob = dobField.value;
+        let address = addressField.value.trim();
+
+        if (!name || !email || !mobile || !gender || !dob || !address) {
+            alert("All fields are required!");
+            return;
+        }
+
+        if (selectedRow === null) {
+            let row = userTable.insertRow();
+            row.insertCell(0).innerText = name;
+            row.insertCell(1).innerText = email;
+            row.insertCell(2).innerText = mobile;
+            row.insertCell(3).innerText = gender;
+            row.insertCell(4).innerText = dob;
+            row.insertCell(5).innerText = address;
+            row.insertCell(6).innerHTML =
+                `<button class="edit" onclick="editUser(this)">Edit</button>
+                 <button class="delete" onclick="deleteUser(this)">Delete</button>`;
+
+            successMsg.innerText = "Registration is Successful ✅";
+        } else {
+            selectedRow.cells[0].innerText = name;
+            selectedRow.cells[1].innerText = email;
+            selectedRow.cells[2].innerText = mobile;
+            selectedRow.cells[3].innerText = gender;
+            selectedRow.cells[4].innerText = dob;
+            selectedRow.cells[5].innerText = address;
+            selectedRow = null;
+            btn.innerText = "Register";
+            successMsg.innerText = "Updated Successfully ✅";
+        }
+
+        setTimeout(() => successMsg.innerText = "", 3000);
+        clearForm();
+    }
+
+    function editUser(btnRef) {
+        selectedRow = btnRef.parentElement.parentElement;
+
+        nameField.value = selectedRow.cells[0].innerText;
+        emailField.value = selectedRow.cells[1].innerText;
+        mobileField.value = selectedRow.cells[2].innerText;
+        genderField.value = selectedRow.cells[3].innerText;
+        dobField.value = selectedRow.cells[4].innerText;
+        addressField.value = selectedRow.cells[5].innerText;
+
+        btn.innerText = "Update";
+        nameField.focus();
+    }
+
+    function deleteUser(btnRef) {
+        if (confirm("Are you sure you want to delete?")) {
+            btnRef.parentElement.parentElement.remove();
+            successMsg.innerText = "Deleted Successfully ❌";
+            setTimeout(() => successMsg.innerText = "", 3000);
+        }
+    }
+
+    function clearForm() {
+        nameField.value = "";
+        emailField.value = "";
+        mobileField.value = "";
+        genderField.value = "";
+        dobField.value = "";
+        addressField.value = "";
+        nameField.focus();
+    }
+
+    /* SHORTCUT REFERENCES */
+    const nameField = document.getElementById("name");
+    const emailField = document.getElementById("email");
+    const mobileField = document.getElementById("mobile");
+    // Mobile number restriction – only 10 digits
+mobileField.addEventListener("input", function () {
+    this.value = this.value.replace(/[^0-9]/g, "");
+
+    if (this.value.length > 10) {
+        this.value = this.value.slice(0, 10);
+    }
+});
+    const genderField = document.getElementById("gender");
+    const dobField = document.getElementById("dob");
+    const addressField = document.getElementById("address");
+    const userTable = document.getElementById("userTable");
+    const successMsg = document.getElementById("successMsg");
+    const btn = document.getElementById("btn");
+</script>
+
+</body>
+</html>
